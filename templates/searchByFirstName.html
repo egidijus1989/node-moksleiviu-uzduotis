@@ -30,39 +30,6 @@
         </div>
       </div>
     </nav>
-    <section class="container justify-content-md-center search">
-      <!--///////////////////////////////////////////////////////////////////////-->
-      <form action="/searchByFirstName" method="get" class="input-group">
-        <input
-          type="text"
-          name="firstName"
-          class="form-control"
-          placeholder="Ieškoti pagal vardą"
-        />
-        <button type="submit" class="btn btn-primary">Search</button>
-      </form>
-      <!--//////////////////////////////////////////////////////////////////////-->
-      <form action="/searchByLastName" method="get" class="input-group">
-        <input
-          type="text"
-          name="lastName"
-          class="form-control"
-          placeholder="Ieškoti pagal pavardę"
-        />
-        <button type="submit" class="btn btn-primary">Search</button>
-      </form>
-      <!--///////////////////////////////////////////////////////////////////////-->
-      <form action="/searchByClass" method="get" class="input-group">
-        <input
-          type="text"
-          name="class"
-          class="form-control"
-          placeholder="Ieškoti pagal klasę"
-        />
-        <button type="submit" class="btn btn-primary">Search</button>
-      </form>
-      <!--///////////////////////////////////////////////////////////////////////-->
-    </section>
     <section class="container justify-content-md-center">
       <h2>Moksleiviai</h2>
       <div class="row">{%STUDENT_CARDS%}</div>

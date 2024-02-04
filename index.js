@@ -34,12 +34,12 @@ const server = http.createServer((req, res) => {
 
   switch (pathname) {
     case "/":
-      const cardHtml = students.map((student) =>
-        replaceTemplate(card, student)
-      );
+      const cardHtml = students
+        .sort((a, z) => a.lastName.localeCompare(z.lastName)) //////////////////////////neveikia - iskreipia linkus
+        .map((student) => replaceTemplate(card, student));
       const dropdawnItemHtml = sortAndFilterClass(students).map(
         (studentClass) => replaceTemplate(dropdawnItem, studentClass)
-      ); //sortAndFilterClass nz ar veikia
+      );
       let output = main.replace(`{%STUDENT_CARDS%}`, cardHtml.join(""));
       output = output.replace(`{%CLASS%}`, dropdawnItemHtml.join(""));
       res.writeHead(200, {
@@ -47,7 +47,88 @@ const server = http.createServer((req, res) => {
       });
       res.end(output);
       break;
-    /////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////
+    case "/class":
+      const cardHtml2 = students
+        .filter((student) => student.class.includes(query.class))
+        .map((student) => replaceTemplate(card, student));
+      const dropdawnItemHtml2 = sortAndFilterClass(students).map(
+        (studentClass) => replaceTemplate(dropdawnItem, studentClass)
+      );
+      let output2 = main.replace(`{%STUDENT_CARDS%}`, cardHtml2.join(""));
+      output2 = output2.replace(`{%CLASS%}`, dropdawnItemHtml2.join(""));
+      res.writeHead(200, {
+        "Content-Type": "text/html",
+      });
+      res.end(output2);
+      break;
+    /////////////////////////////////////////////////////////////////////////////
+    case "/searchByFirstName":
+      const cardHtmlFirsName = students
+        .filter((student) => student.firstname.includes(query.firstName))
+        .map((student) => replaceTemplate(card, student));
+      console.log(query);
+      const dropdawnItemHtmlFirsName = sortAndFilterClass(students).map(
+        (studentClass) => replaceTemplate(dropdawnItem, studentClass)
+      );
+      let outputFirsName = main.replace(
+        `{%STUDENT_CARDS%}`,
+        cardHtmlFirsName.join("")
+      );
+      outputFirsName = outputFirsName.replace(
+        `{%CLASS%}`,
+        dropdawnItemHtmlFirsName.join("")
+      );
+      res.writeHead(200, {
+        "Content-Type": "text/html",
+      });
+      res.end(outputFirsName);
+      break;
+    /////////////////////////////////////////////////////////////////////////////
+    case "/searchByLastName":
+      const cardHtmlLastName = students
+        .filter((student) => student.lastName.includes(query.lastName))
+        .map((student) => replaceTemplate(card, student));
+      console.log(query);
+      const dropdawnItemHtmlLastName = sortAndFilterClass(students).map(
+        (studentClass) => replaceTemplate(dropdawnItem, studentClass)
+      );
+      let outputLastName = main.replace(
+        `{%STUDENT_CARDS%}`,
+        cardHtmlLastName.join("")
+      );
+      outputLastName = outputLastName.replace(
+        `{%CLASS%}`,
+        dropdawnItemHtmlLastName.join("")
+      );
+      res.writeHead(200, {
+        "Content-Type": "text/html",
+      });
+      res.end(outputLastName);
+      break;
+    /////////////////////////////////////////////////////////////////////////////
+    case "/searchByClass":
+      const cardHtmlClass = students
+        .filter((student) => student.class.includes(query.class))
+        .map((student) => replaceTemplate(card, student));
+      console.log(query);
+      const dropdawnItemHtmlClass = sortAndFilterClass(students).map(
+        (studentClass) => replaceTemplate(dropdawnItem, studentClass)
+      );
+      let outputClass = main.replace(
+        `{%STUDENT_CARDS%}`,
+        cardHtmlClass.join("")
+      );
+      outputClass = outputClass.replace(
+        `{%CLASS%}`,
+        dropdawnItemHtmlClass.join("")
+      );
+      res.writeHead(200, {
+        "Content-Type": "text/html",
+      });
+      res.end(outputClass);
+      break;
+    /////////////////////////////////////////////////////////////////////////////
     case "/student":
       res.writeHead(200, {
         "Content-Type": "text/html",
