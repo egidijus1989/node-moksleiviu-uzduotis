@@ -1,5 +1,16 @@
 [
   {
+    "id": 0,
+    "firstname": "Lina",
+    "lastName": "Linutė",
+    "class": "10A",
+    "subjects_grades": {
+      "math": 9,
+      "physics": 9,
+      "chemistry": 8
+    }
+  },
+  {
     "id": 1,
     "firstname": "Jonas",
     "lastName": "Jonaitis",
@@ -206,17 +217,6 @@
       "math": 7,
       "physics": 8,
       "chemistry": 7
-    }
-  },
-  {
-    "id": 20,
-    "firstname": "Lina",
-    "lastName": "Linutė",
-    "class": "10A",
-    "subjects_grades": {
-      "math": 9,
-      "physics": 9,
-      "chemistry": 8
     }
   }
 ]

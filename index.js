@@ -5,14 +5,29 @@ const data = fs.readFileSync(
   `${__dirname}/moksleiviai/moksleiviai.json`,
   "utf-8"
 );
+const dataAverage = fs.readFileSync(
+  `${__dirname}/moksleiviai/vidurkiai.json`,
+  "utf-8"
+);
 const students = JSON.parse(data);
+const studentsWithAverage = JSON.parse(dataAverage);
 const replaceTemplate = require("./modules/replaceTemplate.js");
 const sortAndFilterClass = require("./modules/sortAndFilterClass,.js");
+const sortbyX = require("./modules/sortByX.js");
 
 /////////////////////Templates//////////////////////////////////
 
 const main = fs.readFileSync(`${__dirname}/templates/main.html`, `utf-8`);
 const card = fs.readFileSync(`${__dirname}/templates/card.html`, `utf-8`);
+const averagePage = fs.readFileSync(
+  `${__dirname}/templates/averagePage.html`,
+  `utf-8`
+);
+const averageTable = fs.readFileSync(
+  `${__dirname}/templates/averageTable.html`,
+  `utf-8`
+);
+
 const studentPage = fs.readFileSync(
   `${__dirname}/templates/student.html`,
   `utf-8`
@@ -21,6 +36,18 @@ const dropdawnItem = fs.readFileSync(
   `${__dirname}/templates/dropdawnItem.html`,
   `utf-8`
 );
+///////////////////////////////////////////////////////////////////////////
+for (let i of students) {
+  i["average"] = (
+    (i.subjects_grades.math +
+      i.subjects_grades.physics +
+      i.subjects_grades.chemistry) /
+    3
+  ).toFixed(2);
+}
+
+const json1 = JSON.stringify(students);
+fs.writeFileSync(`${__dirname}/moksleiviai/vidurkiai.json`, json1, "utf-8");
 
 ////////////////////Server///////////////////////////
 
@@ -34,14 +61,17 @@ const server = http.createServer((req, res) => {
 
   switch (pathname) {
     case "/":
-      const cardHtml = students
-        .sort((a, z) => a.lastName.localeCompare(z.lastName)) //////////////////////////neveikia - iskreipia linkus
-        .map((student) => replaceTemplate(card, student));
+      const cardHtml = students.map((student) =>
+        replaceTemplate(card, student)
+      );
       const dropdawnItemHtml = sortAndFilterClass(students).map(
         (studentClass) => replaceTemplate(dropdawnItem, studentClass)
       );
-      let output = main.replace(`{%STUDENT_CARDS%}`, cardHtml.join(""));
-      output = output.replace(`{%CLASS%}`, dropdawnItemHtml.join(""));
+      // let output = main.replace(`{%STUDENT_CARDS%}`, cardHtml.join(""));
+      // output = output.replace(`{%CLASS%}`, dropdawnItemHtml.join(""));
+      const output = main
+        .replace(`{%STUDENT_CARDS%}`, cardHtml.join(""))
+        .replace(`{%CLASS%}`, dropdawnItemHtml.join(""));
       res.writeHead(200, {
         "Content-Type": "text/html",
       });
@@ -67,7 +97,6 @@ const server = http.createServer((req, res) => {
       const cardHtmlFirsName = students
         .filter((student) => student.firstname.includes(query.firstName))
         .map((student) => replaceTemplate(card, student));
-      console.log(query);
       const dropdawnItemHtmlFirsName = sortAndFilterClass(students).map(
         (studentClass) => replaceTemplate(dropdawnItem, studentClass)
       );
@@ -89,7 +118,6 @@ const server = http.createServer((req, res) => {
       const cardHtmlLastName = students
         .filter((student) => student.lastName.includes(query.lastName))
         .map((student) => replaceTemplate(card, student));
-      console.log(query);
       const dropdawnItemHtmlLastName = sortAndFilterClass(students).map(
         (studentClass) => replaceTemplate(dropdawnItem, studentClass)
       );
@@ -111,7 +139,6 @@ const server = http.createServer((req, res) => {
       const cardHtmlClass = students
         .filter((student) => student.class.includes(query.class))
         .map((student) => replaceTemplate(card, student));
-      console.log(query);
       const dropdawnItemHtmlClass = sortAndFilterClass(students).map(
         (studentClass) => replaceTemplate(dropdawnItem, studentClass)
       );
@@ -128,15 +155,27 @@ const server = http.createServer((req, res) => {
       });
       res.end(outputClass);
       break;
-    /////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////
     case "/student":
       res.writeHead(200, {
         "Content-Type": "text/html",
       });
-      const student = replaceTemplate(studentPage, students[query.id - 1]);
+      const student = replaceTemplate(studentPage, students[query.id]);
       res.end(student);
       break;
     ///////////////////////////////////////////////////////////////////////////////
+    case "/average":
+      const tableRow = sortbyX(studentsWithAverage, "class").map(
+        (studentWithAverage) =>
+          replaceTemplate(averageTable, studentWithAverage)
+      );
+      let outputAverage = averagePage.replace(
+        `{%AVERAGE_TABLE%}`,
+        tableRow.join("")
+      );
+      res.end(outputAverage);
+      break;
+    ////////////////////////////////////////////////////////////////////////////
     default:
       res.writeHead(404, {
         "Content-Type": "text/html",
@@ -148,3 +187,4 @@ const server = http.createServer((req, res) => {
 server.listen(port, host, () => {
   console.log(`Server listening on port ${port}`);
 });
+//////////////////////////////////////////////////////////////////
