@@ -7,6 +7,8 @@ module.exports = (template, student) => {
   output = output.replace(/{%CHEMISTRY%}/g, student.subjects_grades.chemistry);
   output = output.replace(/{%ID%}/g, student.id);
   output = output.replace(/{%STUDENT_AVERAGE%}/g, student.average);
+  // output = output.replace(/{%CLASS_NAME%}/g, student.Klase);
+  // output = output.replace(/{%CLASS_AVERAGE%}/g, student.averages);
 
   return output;
 };

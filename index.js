@@ -11,9 +11,12 @@ const dataAverage = fs.readFileSync(
 );
 const students = JSON.parse(data);
 const studentsWithAverage = JSON.parse(dataAverage);
+///////////////////////////////////////////////////////////////////////////////////
+
 const replaceTemplate = require("./modules/replaceTemplate.js");
 const sortAndFilterClass = require("./modules/sortAndFilterClass,.js");
 const sortbyX = require("./modules/sortByX.js");
+const replaceTemplate2 = require("./modules/replaceTemplate2.js");
 
 /////////////////////Templates//////////////////////////////////
 
@@ -36,7 +39,7 @@ const dropdawnItem = fs.readFileSync(
   `${__dirname}/templates/dropdawnItem.html`,
   `utf-8`
 );
-///////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////Individualiu vidurkiu skaiciavimas
 for (let i of students) {
   i["average"] = (
     (i.subjects_grades.math +
@@ -61,7 +64,7 @@ const server = http.createServer((req, res) => {
 
   switch (pathname) {
     case "/":
-      const cardHtml = students.map((student) =>
+      const cardHtml = sortbyX(studentsWithAverage, "lastName").map((student) =>
         replaceTemplate(card, student)
       );
       const dropdawnItemHtml = sortAndFilterClass(students).map(
@@ -165,9 +168,8 @@ const server = http.createServer((req, res) => {
       break;
     ///////////////////////////////////////////////////////////////////////////////
     case "/average":
-      const tableRow = sortbyX(studentsWithAverage, "class").map(
-        (studentWithAverage) =>
-          replaceTemplate(averageTable, studentWithAverage)
+      const tableRow = sortbyX(averageByClass, "Klase").map((student) =>
+        replaceTemplate2(averageTable, student)
       );
       let outputAverage = averagePage.replace(
         `{%AVERAGE_TABLE%}`,
@@ -175,7 +177,7 @@ const server = http.createServer((req, res) => {
       );
       res.end(outputAverage);
       break;
-    ////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
     default:
       res.writeHead(404, {
         "Content-Type": "text/html",
@@ -187,4 +189,16 @@ const server = http.createServer((req, res) => {
 server.listen(port, host, () => {
   console.log(`Server listening on port ${port}`);
 });
-//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////Vidurkiu skaiciavimas pagal
+const averageByClass = [];
+studentsWithAverage.reduce(function (res, value) {
+  if (!res[value.class]) {
+    res[value.class] = { Klase: value.class, sum: 0, counter: 0, averages: 0 };
+    averageByClass.push(res[value.class]);
+  }
+  res[value.class].sum += parseFloat(value.average);
+  res[value.class].counter += 1;
+  res[value.class].averages = res[value.class].sum / res[value.class].counter;
+  return res;
+}, {});
+////////////////////////////////////////////////////////////////////////////////
